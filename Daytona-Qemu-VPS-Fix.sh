@@ -31,7 +31,6 @@ for i in {1..5}; do
 done
 echo ""
 
-# System proxy
 cat > /etc/profile.d/daytona-net.sh << 'EOF'
 export HTTP_PROXY=http://10.0.2.2:8796
 export HTTPS_PROXY=http://10.0.2.2:8796
@@ -66,7 +65,6 @@ EOFP
 chmod 440 /etc/sudoers.d/proxy
 echo -e "  ${G}✓${N} sudoers proxy"
 
-# Activate immediately
 export HTTP_PROXY="http://10.0.2.2:8796"
 export HTTPS_PROXY="http://10.0.2.2:8796"
 export http_proxy="http://10.0.2.2:8796"
