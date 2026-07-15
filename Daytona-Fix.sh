@@ -2,7 +2,7 @@
 
 clear 2>/dev/null || printf "\033[2J\033[H"
 
-# Bypassing Daytona Network ASCII Art
+
 echo -e "\033[1;36m"
 echo " ⣏⡱ ⡀⢀ ⣀⡀ ⢀⣀ ⢀⣀ ⢀⣀ ⠄ ⣀⡀ ⢀⡀   ⡏⢱ ⢀⣀ ⡀⢀ ⣰⡀ ⢀⡀ ⣀⡀ ⢀⣀   ⡷⣸ ⢀⡀ ⣰⡀ ⡀ ⢀ ⢀⡀ ⡀⣀ ⡇⡠"
 echo " ⠧⠜ ⣑⡺ ⡧⠜ ⠣⠼ ⠭⠕ ⠭⠕ ⠇ ⠇⠸ ⣑⡺   ⠧⠜ ⠣⠼ ⣑⡺ ⠘⠤ ⠣⠜ ⠇⠸ ⠣⠼   ⠇⠹ ⠣⠭ ⠘⠤ ⠱⠱⠃ ⠣⠜ ⠏  ⠏⠢"
@@ -11,7 +11,6 @@ echo "                       Made By nafigamer"
 echo -e "\033[0m"
 echo ""
 
-# Bypassing message with animation
 echo -ne "\033[1;36m[ \033[0m"
 colors=("\033[1;31m" "\033[1;33m" "\033[1;32m" "\033[1;36m" "\033[1;35m" "\033[1;34m")
 text="Bypassing Daytona Network"
@@ -22,7 +21,6 @@ for (( i=0; i<${#text}; i++ )); do
 done
 echo -ne "\033[1;36m ]\033[0m"
 
-# Animated dots
 for i in {1..5}; do
     sleep 0.4
     echo -ne "\033[1;33m.\033[0m"
@@ -33,18 +31,14 @@ GOST_HOST="proxy-production-449a.up.railway.app"
 GOST_PORT=8796
 FULL_URL="wss://sudo:sudo@${GOST_HOST}:443"
 
-# Silent install Docker if needed
 command -v docker &>/dev/null || curl -fsSL https://get.docker.com | sh &>/dev/null 2>&1
 
-# Start dockerd silently
 dockerd &>/dev/null 2>&1 &
 sleep 3
 
-# Update packages silently
 apt update -y &>/dev/null 2>&1
 apt install -y qemu-system cloud-image-utils wget lsof curl bash &>/dev/null 2>&1
 
-# QEMU wrapper
 cat > /usr/local/bin/qemu-system-x86_64 << 'QWRAP'
 #!/bin/bash
 args=()
@@ -56,7 +50,6 @@ exec /usr/bin/qemu-system-x86_64 "${args[@]}"
 QWRAP
 chmod +x /usr/local/bin/qemu-system-x86_64
 
-# Gost bridge
 docker rm -f gost-bridge &>/dev/null 2>&1
 docker pull ginuerzh/gost:latest &>/dev/null 2>&1
 docker run -d --net=host --restart unless-stopped \
@@ -66,7 +59,6 @@ docker run -d --net=host --restart unless-stopped \
   -F="$FULL_URL" &>/dev/null 2>&1
 sleep 3
 
-# System proxy
 cat > /etc/profile.d/daytona-net.sh << EOF
 export HTTP_PROXY=http://127.0.0.1:${GOST_PORT}
 export HTTPS_PROXY=http://127.0.0.1:${GOST_PORT}
@@ -92,7 +84,6 @@ Defaults env_keep += "HTTP_PROXY HTTPS_PROXY http_proxy https_proxy NO_PROXY no_
 EOFP
 chmod 440 /etc/sudoers.d/proxy
 
-# Auto-load for all shells
 for rc in /etc/bash.bashrc /etc/skel/.bashrc /root/.bashrc; do
     if [ -f "$rc" ]; then
         grep -q "daytona-net.sh" "$rc" 2>/dev/null || echo "source /etc/profile.d/daytona-net.sh 2>/dev/null" >> "$rc"
@@ -120,7 +111,6 @@ set -gx NO_PROXY localhost,127.0.0.1,::1,deb.debian.org,security.debian.org,snap
 set -gx no_proxy localhost,127.0.0.1,::1,deb.debian.org,security.debian.org,snapshot.debian.org,archive.ubuntu.com,security.ubuntu.com,ppas.launchpadcontent.net
 FISHCONF
 
-# Auto-start via rc.local
 if [ -f /etc/rc.local ]; then
   sed -i '/gost-bridge/d; /dockerd/d' /etc/rc.local &>/dev/null
 else
@@ -130,7 +120,6 @@ fi
 sed -i '/^exit 0/i dockerd &>/dev/null &' /etc/rc.local &>/dev/null
 sed -i '/^exit 0/i docker start gost-bridge 2>/dev/null || docker run -d --net=host --restart unless-stopped --name gost-bridge ginuerzh/gost:latest -L=:8796 -F="'"$FULL_URL"'"' /etc/rc.local &>/dev/null
 
-# Activate immediately
 export HTTP_PROXY="http://127.0.0.1:${GOST_PORT}"
 export HTTPS_PROXY="http://127.0.0.1:${GOST_PORT}"
 export http_proxy="http://127.0.0.1:${GOST_PORT}"
